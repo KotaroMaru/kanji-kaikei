@@ -230,7 +230,75 @@ export default function AccountingContent() {
   return (
     <div className="space-y-6">
 
-      {/* ─── 上部: グループ金額テーブル ─────────────────────────────── */}
+      {/* ─── 会計サマリー（最上部）────────────────────────────────────── */}
+      {(totalExpenses > 0 || expectedCollection > 0) && (
+        <section>
+          <p className={sectionLabel}>会計サマリー</p>
+
+          {totalExpenses > 0 && (
+            <div
+              className={`rounded-xl p-4 text-sm font-medium mb-3 ${
+                diff >= 0
+                  ? "bg-green-50 border border-green-200 text-green-700"
+                  : "bg-red-50 border border-red-200 text-red-600"
+              }`}
+            >
+              {diff >= 0
+                ? `予算が ¥${diff.toLocaleString()} 余っています`
+                : `予算が ¥${Math.abs(diff).toLocaleString()} 不足しています`}
+            </div>
+          )}
+
+          <div className="bg-white rounded-xl shadow-sm border border-sakura-100 p-5 space-y-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-xs text-slate-500 mb-1">総費用</div>
+                <div className="text-xl font-bold text-slate-800">
+                  ¥{totalExpenses.toLocaleString()}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">回収予定</div>
+                <div className="text-xl font-bold text-sakura-600">
+                  ¥{expectedCollection.toLocaleString()}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">差額</div>
+                <div
+                  className={`text-xl font-bold ${
+                    diff >= 0 ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {diff >= 0 ? "+" : ""}¥{diff.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-sakura-50 space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span>
+                  支払い進捗（{paidCount} / {attendingMembers.length}人）
+                </span>
+                <span>
+                  ¥{paidAmount.toLocaleString()} / ¥{expectedCollection.toLocaleString()}
+                </span>
+              </div>
+              <div className="w-full bg-sakura-100 rounded-full h-2.5">
+                <div
+                  className="bg-sakura-500 h-2.5 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(paymentProgress, 100)}%` }}
+                />
+              </div>
+              <div className="text-xs text-slate-400 text-right">
+                {paymentProgress.toFixed(0)}% 回収済み
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── グループ金額テーブル ─────────────────────────────────────── */}
       {groups.length > 0 && (
         <section>
           <p className={sectionLabel}>グループ金額</p>
@@ -349,77 +417,6 @@ export default function AccountingContent() {
         <div className="text-center py-16 text-slate-400 text-sm">
           設定ページでグループとメンバーを追加してください
         </div>
-      )}
-
-      {/* ─── 下部: 会計サマリー ──────────────────────────────────────── */}
-      {(totalExpenses > 0 || expectedCollection > 0) && (
-        <section>
-          <p className={sectionLabel}>会計サマリー</p>
-
-          {/* Budget alert */}
-          {totalExpenses > 0 && (
-            <div
-              className={`rounded-xl p-4 text-sm font-medium mb-3 ${
-                diff >= 0
-                  ? "bg-green-50 border border-green-200 text-green-700"
-                  : "bg-red-50 border border-red-200 text-red-600"
-              }`}
-            >
-              {diff >= 0
-                ? `予算が ¥${diff.toLocaleString()} 余っています`
-                : `予算が ¥${Math.abs(diff).toLocaleString()} 不足しています`}
-            </div>
-          )}
-
-          {/* Stats */}
-          <div className="bg-white rounded-xl shadow-sm border border-sakura-100 p-5 space-y-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-xs text-slate-500 mb-1">総費用</div>
-                <div className="text-xl font-bold text-slate-800">
-                  ¥{totalExpenses.toLocaleString()}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 mb-1">回収予定</div>
-                <div className="text-xl font-bold text-sakura-600">
-                  ¥{expectedCollection.toLocaleString()}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 mb-1">差額</div>
-                <div
-                  className={`text-xl font-bold ${
-                    diff >= 0 ? "text-green-600" : "text-red-500"
-                  }`}
-                >
-                  {diff >= 0 ? "+" : ""}¥{diff.toLocaleString()}
-                </div>
-              </div>
-            </div>
-
-            {/* Progress bar */}
-            <div className="pt-2 border-t border-sakura-50 space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span>
-                  支払い進捗（{paidCount} / {attendingMembers.length}人）
-                </span>
-                <span>
-                  ¥{paidAmount.toLocaleString()} / ¥{expectedCollection.toLocaleString()}
-                </span>
-              </div>
-              <div className="w-full bg-sakura-100 rounded-full h-2.5">
-                <div
-                  className="bg-sakura-500 h-2.5 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(paymentProgress, 100)}%` }}
-                />
-              </div>
-              <div className="text-xs text-slate-400 text-right">
-                {paymentProgress.toFixed(0)}% 回収済み
-              </div>
-            </div>
-          </div>
-        </section>
       )}
 
       <Toast toasts={toasts} onRemove={removeToast} />
